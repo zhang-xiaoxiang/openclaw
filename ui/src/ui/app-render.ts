@@ -1519,6 +1519,14 @@ export function renderApp(state: AppViewState) {
               onSplitRatioChange: (ratio: number) => state.handleSplitRatioChange(ratio),
               assistantName: state.assistantName,
               assistantAvatar: state.assistantAvatar,
+              userAvatar: state.userAvatar,
+              onUserAvatarChange: (avatar: string | null) => {
+                state.userAvatar = avatar;
+                state.applySettings({
+                  ...state.settings,
+                  userAvatar: avatar ?? undefined,
+                });
+              },
               basePath: state.basePath ?? "",
             })
           : nothing}

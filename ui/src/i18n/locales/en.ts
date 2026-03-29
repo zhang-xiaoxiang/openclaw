@@ -389,6 +389,11 @@ export const en: TranslationMap = {
     showCronSessions: "Show cron sessions",
     showCronSessionsHidden: "Show cron sessions ({count} hidden)",
     onboardingDisabled: "Disabled during setup",
+    avatarMenu: {
+      upload: "Upload avatar",
+      change: "Change avatar",
+      remove: "Remove avatar",
+    },
   },
   languages: {
     en: "English",

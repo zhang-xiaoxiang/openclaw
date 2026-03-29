@@ -152,6 +152,7 @@ export class OpenClawApp extends LitElement {
   @state() serverVersion: string | null = null;
 
   @state() sessionKey = this.settings.sessionKey;
+  @state() userAvatar = this.settings.userAvatar ?? null;
   @state() chatLoading = false;
   @state() chatSending = false;
   @state() chatMessage = "";
@@ -755,6 +756,14 @@ export class OpenClawApp extends LitElement {
     const newRatio = Math.max(0.4, Math.min(0.7, ratio));
     this.splitRatio = newRatio;
     this.applySettings({ ...this.settings, splitRatio: newRatio });
+  }
+
+  handleUserAvatarClick() {
+    // Triggered from chat view when user clicks avatar
+    const input = document.getElementById("user-avatar-file-input") as HTMLInputElement | null;
+    if (input) {
+      input.click();
+    }
   }
 
   render() {

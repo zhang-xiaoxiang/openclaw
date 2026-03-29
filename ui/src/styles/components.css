@@ -4468,3 +4468,53 @@ details[open] > .ov-expandable-toggle::after {
     gap: 4px;
   }
 }
+
+/* ===========================================
+   User Avatar Menu
+   =========================================== */
+
+.user-avatar-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 120px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: scale-in 0.12s ease-out;
+}
+
+.user-avatar-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s ease-out;
+  color: var(--text);
+}
+
+.user-avatar-menu__item:hover {
+  background: var(--bg-hover);
+}
+
+.user-avatar-menu__item svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.user-avatar-menu__item--danger {
+  color: var(--danger);
+}
+
+.user-avatar-menu__item--danger:hover {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.user-avatar-file-input {
+  display: none;
+}

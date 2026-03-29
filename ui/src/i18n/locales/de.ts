@@ -119,6 +119,11 @@ export const de: TranslationMap = {
     showCronSessions: "Cron-Sitzungen anzeigen",
     showCronSessionsHidden: "Cron-Sitzungen anzeigen ({count} ausgeblendet)",
     onboardingDisabled: "Während der Einrichtung deaktiviert",
+    avatarMenu: {
+      upload: "Avatar hochladen",
+      change: "Avatar ändern",
+      remove: "Avatar entfernen",
+    },
   },
   languages: {
     en: "English",

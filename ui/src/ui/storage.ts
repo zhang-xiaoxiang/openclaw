@@ -57,6 +57,7 @@ export type UiSettings = {
   navGroupsCollapsed: Record<string, boolean>; // Which nav groups are collapsed
   borderRadius: number; // Corner roundness (0–100, default 50)
   locale?: string;
+  userAvatar?: string; // User avatar URL or data URI (max 200 chars)
 };
 
 function isViteDevPage(): boolean {
@@ -202,6 +203,7 @@ export function loadSettings(): UiSettings {
     navWidth: 220,
     navGroupsCollapsed: {},
     borderRadius: 50,
+    userAvatar: undefined,
   };
 
   try {
@@ -266,6 +268,10 @@ export function loadSettings(): UiSettings {
           ? snapBorderRadius(parsed.borderRadius)
           : defaults.borderRadius,
       locale: isSupportedLocale(parsed.locale) ? parsed.locale : undefined,
+      userAvatar:
+        typeof parsed.userAvatar === "string" && parsed.userAvatar.trim()
+          ? parsed.userAvatar.trim().slice(0, 200)
+          : undefined,
     };
     if ("token" in parsed) {
       persistSettings(settings);
@@ -327,6 +333,7 @@ function persistSettings(next: UiSettings) {
     borderRadius: next.borderRadius,
     sessionsByGateway,
     ...(next.locale ? { locale: next.locale } : {}),
+    ...(next.userAvatar ? { userAvatar: next.userAvatar } : {}),
   };
   const serialized = JSON.stringify(persisted);
   try {

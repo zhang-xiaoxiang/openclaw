@@ -404,6 +404,13 @@ export const icons = {
       <line x1="14" x2="14" y1="11" y2="17" />
     </svg>
   `,
+  upload: html`
+    <svg viewBox="0 0 24 24">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" x2="12" y1="3" y2="15" />
+    </svg>
+  `,
   eye: html`
     <svg viewBox="0 0 24 24">
       <path

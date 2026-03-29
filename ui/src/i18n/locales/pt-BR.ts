@@ -167,6 +167,11 @@ export const pt_BR: TranslationMap = {
     showCronSessions: "Mostrar sessões de cron",
     showCronSessionsHidden: "Mostrar sessões de cron ({count} ocultas)",
     onboardingDisabled: "Desativado durante a integração",
+    avatarMenu: {
+      upload: "Carregar avatar",
+      change: "Alterar avatar",
+      remove: "Remover avatar",
+    },
   },
   languages: {
     en: "English",

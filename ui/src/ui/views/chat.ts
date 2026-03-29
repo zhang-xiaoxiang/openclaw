@@ -1,6 +1,7 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { ref } from "lit/directives/ref.js";
 import { repeat } from "lit/directives/repeat.js";
+import { t } from "../../i18n/index.ts";
 import {
   CHAT_ATTACHMENT_ACCEPT,
   isSupportedChatAttachmentMimeType,
@@ -82,6 +83,9 @@ export type ChatProps = {
   splitRatio?: number;
   assistantName: string;
   assistantAvatar: string | null;
+  userAvatar?: string | null;
+  onUserAvatarChange?: (avatar: string | null) => void;
+  onUserAvatarClick?: (e: Event) => void;
   attachments?: ChatAttachment[];
   onAttachmentsChange?: (attachments: ChatAttachment[]) => void;
   showNewMessages?: boolean;
@@ -151,6 +155,9 @@ interface ChatEphemeralState {
   searchOpen: boolean;
   searchQuery: string;
   pinnedExpanded: boolean;
+  avatarMenuOpen: boolean;
+  avatarMenuX: number;
+  avatarMenuY: number;
 }
 
 function createChatEphemeralState(): ChatEphemeralState {
@@ -166,6 +173,9 @@ function createChatEphemeralState(): ChatEphemeralState {
     searchOpen: false,
     searchQuery: "",
     pinnedExpanded: false,
+    avatarMenuOpen: false,
+    avatarMenuX: 0,
+    avatarMenuY: 0,
   };
 }
 
@@ -882,6 +892,55 @@ function renderSlashMenu(
   `;
 }
 
+function renderAvatarMenu(
+  requestUpdate: () => void,
+  props: ChatProps,
+): TemplateResult | typeof nothing {
+  if (!vs.avatarMenuOpen) {
+    return nothing;
+  }
+
+  const hasAvatar = Boolean(props.userAvatar);
+
+  return html`
+    <div
+      class="user-avatar-menu"
+      style="left: ${vs.avatarMenuX}px; top: ${vs.avatarMenuY}px;"
+      @click=${(e: Event) => e.stopPropagation()}
+    >
+      <div
+        class="user-avatar-menu__item"
+        @click=${() => {
+          const input = document.getElementById(
+            "user-avatar-file-input",
+          ) as HTMLInputElement | null;
+          if (input) {
+            input.click();
+          }
+          vs.avatarMenuOpen = false;
+          requestUpdate();
+        }}
+      >
+        ${hasAvatar ? t("chat.avatarMenu.change") : t("chat.avatarMenu.upload")}
+      </div>
+      ${hasAvatar
+        ? html`
+            <div
+              class="user-avatar-menu__item user-avatar-menu__item--danger"
+              @click=${() => {
+                props.onUserAvatarChange?.(null);
+                vs.avatarMenuOpen = false;
+                requestUpdate();
+              }}
+            >
+              ${t("chat.avatarMenu.remove")}
+            </div>
+          `
+        : nothing}
+    </div>
+  `;
+}
+
 export function renderChat(props: ChatProps) {
   const canCompose = props.connected;
   const isBusy = props.sending || props.stream !== null;
@@ -930,6 +989,22 @@ export function renderChat(props: ChatProps) {
       },
       () => {},
     );
+  };
+
+  const handleAvatarClick = (e: Event) => {
+    e.stopPropagation();
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    vs.avatarMenuX = rect.left;
+    vs.avatarMenuY = rect.bottom;
+    vs.avatarMenuOpen = true;
+    requestUpdate();
+
+    const closeMenu = () => {
+      vs.avatarMenuOpen = false;
+      document.removeEventListener("click", closeMenu);
+      requestUpdate();
+    };
+    requestAnimationFrame(() => document.addEventListener("click", closeMenu));
   };
 
   const chatItems = buildChatItems(props);
@@ -1022,6 +1097,9 @@ export function renderChat(props: ChatProps) {
                 showToolCalls: props.showToolCalls,
                 assistantName: props.assistantName,
                 assistantAvatar: assistantIdentity.avatar,
+                userAvatar: props.userAvatar ?? null,
+                onUserAvatarChange: props.onUserAvatarChange,
+                onUserAvatarClick: (e: Event) => handleAvatarClick(e),
                 basePath: props.basePath,
                 contextWindow:
                   activeSession?.contextTokens ?? props.sessions?.defaults?.contextTokens ?? null,
@@ -1178,6 +1256,7 @@ export function renderChat(props: ChatProps) {
           `
         : nothing}
       ${renderSearchBar(requestUpdate)} ${renderPinnedSection(props, pinned, requestUpdate)}
+      ${renderAvatarMenu(requestUpdate, props)}
 
       <div class="chat-split-container ${sidebarOpen ? "chat-split-container--open" : ""}">
         <div
@@ -1251,6 +1330,32 @@ export function renderChat(props: ChatProps) {
       <!-- Input bar -->
       <div class="agent-chat__input">
         ${renderSlashMenu(requestUpdate, props)} ${renderAttachmentPreview(props)}
+
+        <!-- Hidden file input for user avatar -->
+        <input
+          type="file"
+          id="user-avatar-file-input"
+          accept="image/*"
+          class="user-avatar-file-input"
+          style="display: none;"
+          @change=${(e: Event) => {
+            const input = e.target as HTMLInputElement;
+            const file = input.files?.[0];
+            if (file && props.onUserAvatarChange) {
+              if (!file.type.startsWith("image/")) {
+                return;
+              }
+              const reader = new FileReader();
+              reader.addEventListener("load", () => {
+                const dataUrl = reader.result as string;
+                // Limit avatar size to 200 chars when stored
+                props.onUserAvatarChange?.(dataUrl);
+              });
+              reader.readAsDataURL(file);
+            }
+            input.value = "";
+          }}
+        />
 
         <input
           type="file"

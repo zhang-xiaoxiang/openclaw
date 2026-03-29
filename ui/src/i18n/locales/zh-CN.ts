@@ -164,6 +164,11 @@ export const zh_CN: TranslationMap = {
     showCronSessions: "显示定时任务会话",
     showCronSessionsHidden: "显示定时任务会话 (已隐藏 {count} 个)",
     onboardingDisabled: "引导期间禁用",
+    avatarMenu: {
+      upload: "上传头像",
+      change: "更换头像",
+      remove: "移除头像",
+    },
   },
   languages: {
     en: "English",
